@@ -145,4 +145,76 @@ it("should update a vehicle", async () => {
   expect(response.body.success).toBe(true);
   expect(response.body.vehicle.model).toBe("Fortuner Legender");
 });
+it("should allow admin to delete a vehicle", async () => {
+  const register = await request(app)
+    .post("/api/auth/register")
+    .send({
+      name: "Admin",
+      email: "deleteadmin@gmail.com",
+      password: "password123",
+      role: "admin",
+    });
+
+  const token = register.body.token;
+
+  const createResponse = await request(app)
+    .post("/api/vehicles")
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      make: "BMW",
+      model: "X5",
+      category: "SUV",
+      price: 65000,
+      quantity: 5,
+    });
+
+  const vehicleId = createResponse.body.vehicle._id;
+
+  const response = await request(app)
+    .delete(`/api/vehicles/${vehicleId}`)
+    .set("Authorization", `Bearer ${token}`);
+
+  expect(response.status).toBe(200);
+  expect(response.body.success).toBe(true);
+});
+it("should not allow a normal user to delete a vehicle", async () => {
+  const admin = await request(app)
+    .post("/api/auth/register")
+    .send({
+      name: "Admin",
+      email: "admin-delete2@gmail.com",
+      password: "password123",
+      role: "admin",
+    });
+
+  const adminToken = admin.body.token;
+
+  const user = await request(app)
+    .post("/api/auth/register")
+    .send({
+      name: "User",
+      email: "user-delete@gmail.com",
+      password: "password123",
+      role: "user",
+    });
+
+  const userToken = user.body.token;
+
+  const vehicle = await request(app)
+    .post("/api/vehicles")
+    .set("Authorization", `Bearer ${adminToken}`)
+    .send({
+      make: "Audi",
+      model: "A6",
+      category: "Sedan",
+      price: 45000,
+      quantity: 5,
+    });
+
+  const response = await request(app)
+    .delete(`/api/vehicles/${vehicle.body.vehicle._id}`)
+    .set("Authorization", `Bearer ${userToken}`);
+
+  expect(response.status).toBe(403);
+});
 });

@@ -80,4 +80,23 @@ export const updateVehicle = async (
       message: error.message,
     });
   }
+  
+};
+export const deleteVehicle = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    await vehicleService.deleteVehicle(req.params.id as string);
+
+    res.status(200).json({
+      success: true,
+      message: "Vehicle deleted successfully",
+    });
+  } catch (error: any) {
+    res.status(404).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };

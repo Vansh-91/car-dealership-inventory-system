@@ -1,5 +1,5 @@
 import express from "express";
-import { createVehicle,updateVehicle } from "../controllers/vehicleController";
+import { createVehicle,updateVehicle,deleteVehicle } from "../controllers/vehicleController";
 import {
   getAllVehicles,
 } from "../controllers/vehicleController";
@@ -7,6 +7,7 @@ import authMiddleware from "../middleware/authMiddleware";
 import validateRequest from "../middleware/validateRequest";
 import { createVehicleValidation } from "../validators/vehicleValidator";
 import { searchVehicles } from "../controllers/vehicleController";
+import adminMiddleware from "../middleware/adminMiddleware";
 const router = express.Router();
 
 router.post(
@@ -32,5 +33,11 @@ router.put(
   createVehicleValidation,
   validateRequest,
   updateVehicle
+);
+router.delete(
+  "/:id",
+  authMiddleware,
+  adminMiddleware,
+  deleteVehicle
 );
 export default router;

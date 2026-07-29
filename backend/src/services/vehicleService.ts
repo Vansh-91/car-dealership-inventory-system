@@ -69,6 +69,15 @@ class VehicleService {
 
   return vehicle;
 }
+async deleteVehicle(id: string) {
+  const vehicle = await Vehicle.findByIdAndDelete(id);
+
+  if (!vehicle) {
+    throw new Error("Vehicle not found");
+  }
+
+  return vehicle;
+}
 }
 
 export default new VehicleService();
