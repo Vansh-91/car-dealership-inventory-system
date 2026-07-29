@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/User";
+import generateToken from "../utils/generateToken";
 
 export interface RegisterUserDTO {
   name: string;
@@ -31,22 +32,40 @@ class AuthService {
       role: data.role ?? "user",
     });
 
-    const token = jwt.sign(
-      {
-        id: user._id,
-        role: user.role,
-      },
-      process.env.JWT_SECRET as string,
-      {
-        expiresIn: "7d",
-      }
-    );
+  const token = generateToken({
+  id: user._id.toString(),
+  role: user.role,
+});
 
     return {
       token,
       user,
     };
   }
+  async login(email: string, password: string) {
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new Error("Invalid email or password");
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+
+  if (!isMatch) {
+    throw new Error("Invalid email or password");
+  }
+
+  const token = generateToken({
+    id: user._id.toString(),
+    role: user.role,
+  });
+
+  return {
+    token,
+    user,
+  };
 }
+}
+
 
 export default new AuthService();
