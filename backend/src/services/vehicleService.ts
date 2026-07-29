@@ -53,6 +53,22 @@ class VehicleService {
 
     return await Vehicle.find(filter);
   }
+  async updateVehicle(id: string, data: CreateVehicleDTO) {
+  const vehicle = await Vehicle.findByIdAndUpdate(
+    id,
+    data,
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
+  if (!vehicle) {
+    throw new Error("Vehicle not found");
+  }
+
+  return vehicle;
+}
 }
 
 export default new VehicleService();

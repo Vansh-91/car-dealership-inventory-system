@@ -60,3 +60,24 @@ export const searchVehicles = async (
     });
   }
 };
+export const updateVehicle = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const vehicle = await vehicleService.updateVehicle(
+      req.params.id as string,
+      req.body
+    );
+
+    res.status(200).json({
+      success: true,
+      vehicle,
+    });
+  } catch (error: any) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

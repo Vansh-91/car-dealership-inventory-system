@@ -1,5 +1,5 @@
 import express from "express";
-import { createVehicle } from "../controllers/vehicleController";
+import { createVehicle,updateVehicle } from "../controllers/vehicleController";
 import {
   getAllVehicles,
 } from "../controllers/vehicleController";
@@ -25,5 +25,12 @@ router.get(
   "/search",
   authMiddleware,
   searchVehicles
+);
+router.put(
+  "/:id",
+  authMiddleware,
+  createVehicleValidation,
+  validateRequest,
+  updateVehicle
 );
 export default router;

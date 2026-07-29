@@ -105,4 +105,44 @@ it("should search vehicles by make", async () => {
   expect(response.body.vehicles.length).toBeGreaterThan(0);
   expect(response.body.vehicles[0].make).toBe("Toyota");
 });
+it("should update a vehicle", async () => {
+  const register = await request(app)
+    .post("/api/auth/register")
+    .send({
+      name: "Admin",
+      email: "updateadmin@gmail.com",
+      password: "password123",
+      role: "admin",
+    });
+
+  const token = register.body.token;
+
+  const createResponse = await request(app)
+    .post("/api/vehicles")
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      make: "Toyota",
+      model: "Fortuner",
+      category: "SUV",
+      price: 50000,
+      quantity: 5,
+    });
+
+  const vehicleId = createResponse.body.vehicle._id;
+
+  const response = await request(app)
+    .put(`/api/vehicles/${vehicleId}`)
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      make: "Toyota",
+      model: "Fortuner Legender",
+      category: "SUV",
+      price: 55000,
+      quantity: 8,
+    });
+
+  expect(response.status).toBe(200);
+  expect(response.body.success).toBe(true);
+  expect(response.body.vehicle.model).toBe("Fortuner Legender");
+});
 });
