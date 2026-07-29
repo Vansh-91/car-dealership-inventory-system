@@ -6,7 +6,7 @@ import {
 import authMiddleware from "../middleware/authMiddleware";
 import validateRequest from "../middleware/validateRequest";
 import { createVehicleValidation } from "../validators/vehicleValidator";
-
+import { searchVehicles } from "../controllers/vehicleController";
 const router = express.Router();
 
 router.post(
@@ -20,5 +20,10 @@ router.get(
   "/",
   authMiddleware,
   getAllVehicles
+);
+router.get(
+  "/search",
+  authMiddleware,
+  searchVehicles
 );
 export default router;

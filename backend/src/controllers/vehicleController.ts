@@ -40,4 +40,23 @@ export const getAllVehicles = async (
       message: "Failed to fetch vehicles",
     });
   }
+
+};
+export const searchVehicles = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const vehicles = await vehicleService.searchVehicles(req.query);
+
+    res.status(200).json({
+      success: true,
+      vehicles,
+    });
+  } catch {
+    res.status(500).json({
+      success: false,
+      message: "Failed to search vehicles",
+    });
+  }
 };
