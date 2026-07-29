@@ -217,4 +217,139 @@ it("should not allow a normal user to delete a vehicle", async () => {
 
   expect(response.status).toBe(403);
 });
+it("should purchase a vehicle", async () => {
+  const register = await request(app)
+    .post("/api/auth/register")
+    .send({
+      name: "Admin",
+      email: "purchase@gmail.com",
+      password: "password123",
+      role: "admin",
+    });
+
+  const token = register.body.token;
+
+  const vehicle = await request(app)
+    .post("/api/vehicles")
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      make: "Tesla",
+      model: "Model 3",
+      category: "Electric",
+      price: 60000,
+      quantity: 3,
+    });
+
+  const response = await request(app)
+    .post(`/api/vehicles/${vehicle.body.vehicle._id}/purchase`)
+    .set("Authorization", `Bearer ${token}`);
+
+  expect(response.status).toBe(200);
+  expect(response.body.vehicle.quantity).toBe(2);
+});
+it("should not purchase an out-of-stock vehicle", async () => {
+  const register = await request(app)
+    .post("/api/auth/register")
+    .send({
+      name: "Admin",
+      email: "purchase2@gmail.com",
+      password: "password123",
+      role: "admin",
+    });
+
+  const token = register.body.token;
+
+  const vehicle = await request(app)
+    .post("/api/vehicles")
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      make: "Tesla",
+      model: "Model X",
+      category: "Electric",
+      price: 80000,
+      quantity: 0,
+    });
+
+  const response = await request(app)
+    .post(`/api/vehicles/${vehicle.body.vehicle._id}/purchase`)
+    .set("Authorization", `Bearer ${token}`);
+
+  expect(response.status).toBe(400);
+});
+it("should allow admin to restock a vehicle", async () => {
+  const register = await request(app)
+    .post("/api/auth/register")
+    .send({
+      name: "Admin",
+      email: "restock@gmail.com",
+      password: "password123",
+      role: "admin",
+    });
+
+  const token = register.body.token;
+
+  const vehicle = await request(app)
+    .post("/api/vehicles")
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      make: "Honda",
+      model: "City",
+      category: "Sedan",
+      price: 25000,
+      quantity: 2,
+    });
+
+  const response = await request(app)
+    .post(`/api/vehicles/${vehicle.body.vehicle._id}/restock`)
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      quantity: 5,
+    });
+
+  expect(response.status).toBe(200);
+  expect(response.body.vehicle.quantity).toBe(7);
+});
+it("should not allow normal user to restock", async () => {
+  const admin = await request(app)
+    .post("/api/auth/register")
+    .send({
+      name: "Admin",
+      email: "restockadmin@gmail.com",
+      password: "password123",
+      role: "admin",
+    });
+
+  const adminToken = admin.body.token;
+
+  const user = await request(app)
+    .post("/api/auth/register")
+    .send({
+      name: "User",
+      email: "restockuser@gmail.com",
+      password: "password123",
+      role: "user",
+    });
+
+  const userToken = user.body.token;
+
+  const vehicle = await request(app)
+    .post("/api/vehicles")
+    .set("Authorization", `Bearer ${adminToken}`)
+    .send({
+      make: "Toyota",
+      model: "Fortuner",
+      category: "SUV",
+      price: 50000,
+      quantity: 2,
+    });
+
+  const response = await request(app)
+    .post(`/api/vehicles/${vehicle.body.vehicle._id}/restock`)
+    .set("Authorization", `Bearer ${userToken}`)
+    .send({
+      quantity: 5,
+    });
+
+  expect(response.status).toBe(403);
+});
 });

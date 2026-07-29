@@ -78,6 +78,35 @@ async deleteVehicle(id: string) {
 
   return vehicle;
 }
+async purchaseVehicle(id: string) {
+  const vehicle = await Vehicle.findById(id);
+
+  if (!vehicle) {
+    throw new Error("Vehicle not found");
+  }
+
+  if (vehicle.quantity <= 0) {
+    throw new Error("Vehicle is out of stock");
+  }
+
+  vehicle.quantity -= 1;
+  await vehicle.save();
+
+  return vehicle;
+}
+async restockVehicle(id: string, quantity: number) {
+  const vehicle = await Vehicle.findById(id);
+
+  if (!vehicle) {
+    throw new Error("Vehicle not found");
+  }
+
+  vehicle.quantity += quantity;
+
+  await vehicle.save();
+
+  return vehicle;
+}
 }
 
 export default new VehicleService();

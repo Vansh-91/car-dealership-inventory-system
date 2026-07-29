@@ -1,5 +1,5 @@
 import express from "express";
-import { createVehicle,updateVehicle,deleteVehicle } from "../controllers/vehicleController";
+import { createVehicle,updateVehicle,deleteVehicle,purchaseVehicle, restockVehicle,} from "../controllers/vehicleController";
 import {
   getAllVehicles,
 } from "../controllers/vehicleController";
@@ -39,5 +39,16 @@ router.delete(
   authMiddleware,
   adminMiddleware,
   deleteVehicle
+);
+router.post(
+  "/:id/purchase",
+  authMiddleware,
+  purchaseVehicle
+);
+router.post(
+  "/:id/restock",
+  authMiddleware,
+  adminMiddleware,
+  restockVehicle
 );
 export default router;
