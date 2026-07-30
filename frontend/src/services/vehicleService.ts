@@ -26,3 +26,14 @@ export const deleteVehicle = async (
 
   return response.data;
 };
+export const restockVehicle = async (
+  id: string,
+  quantity: number
+) => {
+  const response = await api.post(
+    `/vehicles/${id}/restock`,
+    { quantity }
+  );
+
+  return response.data;
+};

@@ -1,7 +1,9 @@
-import { FaCarSide } from "react-icons/fa";
+
 import toast from "react-hot-toast";
 import { purchaseVehicle } from "../services/inventoryService";
 import { useAuth } from "../context/AuthContext";
+import { FaCarSide, FaEdit, FaTrash, FaPlus } from "react-icons/fa";
+
 interface Vehicle {
   _id: string;
   make: string;
@@ -16,6 +18,7 @@ interface Props {
   onPurchase: (vehicle: Vehicle) => void;
   onEdit: () => void;
   onDelete: (id: string) => void;
+  onRestock: (id: string) => void;
 }
 
 const VehicleCard = ({
@@ -23,6 +26,7 @@ const VehicleCard = ({
   onPurchase,
   onEdit,
   onDelete,
+  onRestock
 }: Props) => {
     const {user}=useAuth();
   const handlePurchase = async () => {
@@ -86,37 +90,39 @@ const VehicleCard = ({
   <button
     onClick={handlePurchase}
     disabled={vehicle.quantity === 0}
-    className="w-full bg-primary hover:bg-primary-hover disabled:bg-gray-700 disabled:text-gray-400 transition py-3 rounded-xl text-background font-bold"
+    className="w-full bg-primary hover:bg-primary-hover disabled:bg-gray-700 disabled:text-gray-400 rounded-xl py-3 font-bold transition"
   >
-    {vehicle.quantity > 0
-      ? "Purchase"
-      : "Out of Stock"}
+    {vehicle.quantity > 0 ? "Purchase" : "Out Of Stock"}
   </button>
 
   {user?.role === "admin" && (
-
-    <div className="grid grid-cols-2 gap-3">
+    <div className="grid grid-cols-3 gap-2">
 
       <button
         onClick={onEdit}
-        className="bg-blue-600 hover:bg-blue-700 rounded-xl py-3 font-semibold transition"
+        className="bg-blue-600 hover:bg-blue-700 rounded-xl py-3"
       >
-        Edit
+        <FaEdit className="mx-auto" />
+      </button>
+
+      <button
+        onClick={() => onRestock(vehicle._id)}
+        className="bg-green-600 hover:bg-green-700 rounded-xl py-3"
+      >
+        <FaPlus className="mx-auto" />
       </button>
 
       <button
         onClick={() => onDelete(vehicle._id)}
-        className="bg-red-600 hover:bg-red-700 rounded-xl py-3 font-semibold transition"
+        className="bg-red-600 hover:bg-red-700 rounded-xl py-3"
       >
-        Delete
+        <FaTrash className="mx-auto" />
       </button>
 
     </div>
-
   )}
 
 </div>
-
     </div>
   );
 };

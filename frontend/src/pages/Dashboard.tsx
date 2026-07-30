@@ -8,7 +8,7 @@ import SearchBar from "../components/SearchBar";
 import Filters from "../components/Filters";
 import AddVehicleModal from "../components/AddVehicleModal";
 import toast from "react-hot-toast";
-import { deleteVehicle } from "../services/vehicleService";
+import { deleteVehicle,restockVehicle} from "../services/vehicleService";
 interface Vehicle {
   _id: string;
   make: string;
@@ -30,6 +30,21 @@ const [search, setSearch] = useState("");
 const [category, setCategory] = useState("");
 const [minPrice, setMinPrice] = useState("");
 const [maxPrice, setMaxPrice] = useState("");
+const handleRestock = async (id: string) => {
+  const qty = window.prompt("Quantity to restock");
+
+  if (!qty) return;
+
+  try {
+    await restockVehicle(id, Number(qty));
+
+    toast.success("Vehicle Restocked");
+
+    fetchVehicles();
+  } catch {
+    toast.error("Restock Failed");
+  }
+};
 const handleDelete = async (id: string) => {
   const confirmDelete = window.confirm(
     "Are you sure you want to delete this vehicle?"
@@ -153,6 +168,7 @@ const handlePurchase = (updatedVehicle: Vehicle) => {
   onPurchase={handlePurchase}
   onEdit={() => setEditingVehicle(vehicle)}
   onDelete={handleDelete}
+  onRestock={handleRestock}
 />
 ))}
     </div>
