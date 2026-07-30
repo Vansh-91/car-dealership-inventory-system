@@ -1,17 +1,44 @@
 import { FaCarSide } from "react-icons/fa";
-
-interface Props {
-  vehicle: {
-    _id: string;
-    make: string;
-    model: string;
-    category: string;
-    price: number;
-    quantity: number;
-  };
+import toast from "react-hot-toast";
+import { purchaseVehicle } from "../services/inventoryService";
+import { useAuth } from "../context/AuthContext";
+interface Vehicle {
+  _id: string;
+  make: string;
+  model: string;
+  category: string;
+  price: number;
+  quantity: number;
 }
 
-const VehicleCard = ({ vehicle }: Props) => {
+interface Props {
+  vehicle: Vehicle;
+  onPurchase: (vehicle: Vehicle) => void;
+  onEdit: () => void;
+  onDelete: (id: string) => void;
+}
+
+const VehicleCard = ({
+  vehicle,
+  onPurchase,
+  onEdit,
+  onDelete,
+}: Props) => {
+    const {user}=useAuth();
+  const handlePurchase = async () => {
+    try {
+      const response = await purchaseVehicle(vehicle._id);
+
+      toast.success("Vehicle purchased successfully!");
+
+      onPurchase(response.vehicle);
+    } catch (error: any) {
+      toast.error(
+        error.response?.data?.message || "Purchase failed."
+      );
+    }
+  };
+
   return (
     <div className="bg-card rounded-3xl border border-border p-6 hover:border-primary transition-all hover:scale-[1.02]">
 
@@ -44,7 +71,7 @@ const VehicleCard = ({ vehicle }: Props) => {
 
           <span
             className={
-              vehicle.quantity
+              vehicle.quantity > 0
                 ? "text-primary font-bold"
                 : "text-red-500 font-bold"
             }
@@ -54,13 +81,41 @@ const VehicleCard = ({ vehicle }: Props) => {
         </div>
 
       </div>
+<div className="mt-6 space-y-3">
+
+  <button
+    onClick={handlePurchase}
+    disabled={vehicle.quantity === 0}
+    className="w-full bg-primary hover:bg-primary-hover disabled:bg-gray-700 disabled:text-gray-400 transition py-3 rounded-xl text-background font-bold"
+  >
+    {vehicle.quantity > 0
+      ? "Purchase"
+      : "Out of Stock"}
+  </button>
+
+  {user?.role === "admin" && (
+
+    <div className="grid grid-cols-2 gap-3">
 
       <button
-        disabled={vehicle.quantity === 0}
-        className="mt-6 w-full bg-primary disabled:bg-gray-700 disabled:text-gray-400 hover:bg-primary-hover transition py-3 rounded-xl text-background font-bold"
+        onClick={onEdit}
+        className="bg-blue-600 hover:bg-blue-700 rounded-xl py-3 font-semibold transition"
       >
-        Purchase
+        Edit
       </button>
+
+      <button
+        onClick={() => onDelete(vehicle._id)}
+        className="bg-red-600 hover:bg-red-700 rounded-xl py-3 font-semibold transition"
+      >
+        Delete
+      </button>
+
+    </div>
+
+  )}
+
+</div>
 
     </div>
   );

@@ -2,9 +2,13 @@ import { useEffect, useState } from "react";
 import { FaCar, FaWarehouse, FaDollarSign } from "react-icons/fa";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
+import { useAuth } from "../context/AuthContext";
 import VehicleCard from "../components/VehicleCard";
 import SearchBar from "../components/SearchBar";
 import Filters from "../components/Filters";
+import AddVehicleModal from "../components/AddVehicleModal";
+import toast from "react-hot-toast";
+import { deleteVehicle } from "../services/vehicleService";
 interface Vehicle {
   _id: string;
   make: string;
@@ -15,37 +19,67 @@ interface Vehicle {
 }
 
 const Dashboard = () => {
+
     console.log("Dashboard Rendered");
+    const [editingVehicle, setEditingVehicle] =
+  useState<Vehicle | null>(null);
+    const [showAddModal, setShowAddModal] = useState(false);
+    const { user } = useAuth();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
 const [search, setSearch] = useState("");
 const [category, setCategory] = useState("");
 const [minPrice, setMinPrice] = useState("");
 const [maxPrice, setMaxPrice] = useState("");
-  useEffect(() => {
-    console.log("useEffect running");
-    const fetchVehicles = async () => {
-        
-        console.log("Fetching vehicles...");
-      try {
+const handleDelete = async (id: string) => {
+  const confirmDelete = window.confirm(
+    "Are you sure you want to delete this vehicle?"
+  );
 
-       const res = await api.get("/vehicles/search", {
-  params: {
-  search,
-  category,
-  minPrice,
-  maxPrice,
-}
-});
-console.log(res.data);
-        setVehicles(res.data.vehicles);
-      } catch (err) {
-        console.log(err);
-      }
-    };
+  if (!confirmDelete) return;
 
-    fetchVehicles();
-  }, [search, category, minPrice, maxPrice]);
+  try {
+    await deleteVehicle(id);
 
+    toast.success("Vehicle deleted successfully!");
+
+    setVehicles((prev) =>
+      prev.filter((vehicle) => vehicle._id !== id)
+    );
+  } catch (error: any) {
+    toast.error(
+      error.response?.data?.message ||
+        "Delete failed."
+    );
+  }
+};
+const fetchVehicles = async () => {
+  try {
+    const res = await api.get("/vehicles/search", {
+      params: {
+        search,
+        category,
+        minPrice,
+        maxPrice,
+      },
+    });
+
+    setVehicles(res.data.vehicles);
+  } catch (err) {
+    console.log(err);
+  }
+};
+useEffect(() => {
+  fetchVehicles();
+}, [search, category, minPrice, maxPrice]);
+const handlePurchase = (updatedVehicle: Vehicle) => {
+  setVehicles((prev) =>
+    prev.map((vehicle) =>
+      vehicle._id === updatedVehicle._id
+        ? updatedVehicle
+        : vehicle
+    )
+  );
+};
   const totalVehicles = vehicles.length;
 
   const totalStock = vehicles.reduce(
@@ -63,9 +97,22 @@ console.log(res.data);
 
     <Navbar />
 
-    <h1 className="text-4xl font-bold mb-8">
-      Dashboard
-    </h1>
+   <div className="flex justify-between items-center mb-8">
+
+  <h1 className="text-4xl font-bold">
+    Dashboard
+  </h1>
+
+  {user?.role === "admin" && (
+    <button
+  onClick={() => setShowAddModal(true)}
+  className="bg-primary hover:bg-primary-hover text-background px-6 py-3 rounded-xl font-bold transition"
+>
+  + Add Vehicle
+</button>
+  )}
+
+</div>
 
     {/* Search Bar */}
     <SearchBar
@@ -99,14 +146,39 @@ console.log(res.data);
 
     {/* Vehicle Cards */}
     <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-6">
-      {vehicles.map((vehicle) => (
-        <VehicleCard
-          key={vehicle._id}
-          vehicle={vehicle}
-        />
-      ))}
+     {vehicles.map((vehicle) => (
+  <VehicleCard
+  key={vehicle._id}
+  vehicle={vehicle}
+  onPurchase={handlePurchase}
+  onEdit={() => setEditingVehicle(vehicle)}
+  onDelete={handleDelete}
+/>
+))}
     </div>
-
+<AddVehicleModal
+  open={showAddModal || editingVehicle !== null}
+  onClose={() => {
+    setShowAddModal(false);
+    setEditingVehicle(null);
+  }}
+  onSuccess={() => {
+    fetchVehicles();
+    setEditingVehicle(null);
+  }}
+  editId={editingVehicle?._id}
+  initialData={
+    editingVehicle
+      ? {
+          make: editingVehicle.make,
+          model: editingVehicle.model,
+          category: editingVehicle.category,
+          price: editingVehicle.price,
+          quantity: editingVehicle.quantity,
+        }
+      : undefined
+  }
+/>
   </div>
 );
 };
