@@ -47,16 +47,21 @@ export const searchVehicles = async (
   res: Response
 ): Promise<void> => {
   try {
-    const vehicles = await vehicleService.searchVehicles(req.query);
+    const vehicles = await vehicleService.searchVehicles({
+      search: req.query.search as string,
+      category: req.query.category as string,
+      minPrice: Number(req.query.minPrice),
+      maxPrice: Number(req.query.maxPrice),
+    });
 
     res.status(200).json({
       success: true,
       vehicles,
     });
-  } catch {
+  } catch (error: any) {
     res.status(500).json({
       success: false,
-      message: "Failed to search vehicles",
+      message: error.message,
     });
   }
 };
