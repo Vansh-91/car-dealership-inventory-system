@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "CommonJS",
-    "moduleResolution": "node",
+    "module": "Node16",
+    "moduleResolution": "node16",
     "rootDir": "./src",
     "outDir": "./dist",
 
@@ -12,9 +12,7 @@
 
     "types": ["node", "jest"],
 
-    "forceConsistentCasingInFileNames": true,
-
-    
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]
