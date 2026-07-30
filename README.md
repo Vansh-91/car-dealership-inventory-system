@@ -5,11 +5,19 @@ A full-stack **Car Dealership Inventory Management System** built using the **ME
 This project was developed as part of a Full-Stack Developer assessment to demonstrate backend API development, frontend engineering, authentication, database management, testing, and modern development workflows.
 
 ---
+# 🌐 Deployment
 Frontend:
-https://your-vercel-url.vercel.app
+https://car-dealership-inventory-system-rust.vercel.app/
 
 Backend API:
 https://car-dealership-inventory-system-u44t.onrender.com
+
+# 🔑 Demo Credentials
+Admin Account:
+Email:
+admin@dealer.com
+Password:
+Admin@123
 
 # ✨ Features
 
@@ -245,19 +253,24 @@ All backend unit and integration tests pass successfully.
 
 ### Register
 
-*(Insert Screenshot)*
+<img width="1888" height="947" alt="image" src="https://github.com/user-attachments/assets/da593006-c29f-46fd-85b3-83ca6dfeeb46" />
+
 
 ### Dashboard
+<img width="1902" height="912" alt="Screenshot 2026-07-30 193921" src="https://github.com/user-attachments/assets/5ffb8744-0c59-44f9-99c2-7c1310a023d8" />
 
-*(Insert Screenshot)*
+<img width="1891" height="967" alt="image" src="https://github.com/user-attachments/assets/824d66a5-4ee4-435c-a562-797b25f72132" />
+
 
 ### Vehicle Search
 
-*(Insert Screenshot)*
+<img width="1902" height="913" alt="image" src="https://github.com/user-attachments/assets/4d3d05de-ecfb-490d-8b4b-cd786f6b9a51" />
+<img width="1895" height="870" alt="image" src="https://github.com/user-attachments/assets/cfa0ae7e-9012-4f8c-87a9-80dd85e95117" />
+
 
 ### Admin Dashboard
-
-*(Insert Screenshot)*
+<img width="1906" height="900" alt="image" src="https://github.com/user-attachments/assets/ba75070f-097e-42de-88a0-8a1683ba1222" />
+<img width="1911" height="576" alt="image" src="https://github.com/user-attachments/assets/08d5e87a-9faa-4f97-89f8-be402d23537c" />
 
 ---
 
@@ -321,18 +334,16 @@ AI significantly accelerated development by reducing repetitive boilerplate work
 * Cloud deployment monitoring
 
 ---
-
 # 🌐 Deployment
 
-Backend:
-
-*To be added after deployment.*
-
 Frontend:
+Vercel
 
-*To be added after deployment.*
+Backend:
+Render
 
----
+Database:
+MongoDB Atlas
 
 # 👨‍💻 Author
 
